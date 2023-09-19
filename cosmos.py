@@ -2,6 +2,7 @@
 #IMPORT FILES
 import pyttsx3,datetime,pyautogui,time,wikipediaapi,webbrowser
 import speech_recognition as sr
+import mysql.connector as myc
 from AppOpener import open
 #SPEAK FUNCTION
 hfbot=pyttsx3.init('sapi5')
@@ -16,7 +17,7 @@ def speak(audio):
 #RESTART ALERT
 print('RAW Intelligence restarted')
 speak('raw intelligence Restarted')
-speak('Cosmos activated')
+speak('Cosmos, at your service sir')
 
 #STT SPEAK TO TEXT IN ENGLISH
 recognizer = sr.Recognizer()
@@ -24,7 +25,7 @@ def commandeng():
     with sr.Microphone() as source:
         speak('listening')
         print("Listening...")
-        recognizer.pause_threshold = 2
+        recognizer.pause_threshold = 1
         recognizer.energy_threshold=4000
         audio = recognizer.listen(source)
     try:
@@ -45,7 +46,7 @@ def sleeping():
     print("Sleep Mode Activated")
     while True:
         with sr.Microphone() as source:
-            recognizer.pause_threshold = 2
+            recognizer.pause_threshold = 1
             recognizer.energy_threshold=4000
             audio = recognizer.listen(source)
         try:
@@ -63,6 +64,20 @@ def sleeping():
             break
         else:
             True
+
+#TASK specification
+print('Task possible for me are:')
+print('0. Shutdown')
+print('1. Introduction of Cosmos')
+print('2. Schedule Whatsapp message')
+print('3. Make a Whatsapp Call')
+print('4. open an app')
+print('5. close an app')
+print('6. Wikipedia information')
+print('7. Search on browser')
+print('8. open a website using url')
+print('9. Add database')
+
 
 #COMMANDS
 
@@ -179,7 +194,7 @@ def whatcall(name,type):
         pyautogui.leftClick(2586,136)
         while True:
             with sr.Microphone() as source:
-                recognizer.pause_threshold = 2
+                recognizer.pause_threshold = 1
                 recognizer.energy_threshold=4000
                 audio = recognizer.listen(source)
             try:
@@ -219,7 +234,7 @@ def whatcall(name,type):
         pyautogui.leftClick(2686,139)
         while True:
             with sr.Microphone() as source:
-                recognizer.pause_threshold = 2
+                recognizer.pause_threshold = 1
                 recognizer.energy_threshold=4000
                 audio = recognizer.listen(source)
             try:
@@ -264,8 +279,21 @@ def wikipedia(title):
         print('→'+i)
         numb+=1
 
-#specifications
-#def exspecify():
+#Human Database
+def humdata(id,name,surname,father_name,mother_name,dob,status,gender,house_number,house_name,house_area,house_city,house_state,house_country,profession,school,college,relation,data_date,phone_number,mail_id,marital_status):
+    mydb=myc.connect(host='localhost',user='root',password='ryan',database='raw')
+    cur=mydb.cursor()
+    insval="INSERT INTO humdata (id,name,surname,father_name,mother_name,dob,status,gender,house_number,house_name,house_area,house_city,house_state,house_country,profession,school,college,relation,data_date,phone_number,mail_id,marital_status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    vallist=(id,name,surname,father_name,mother_name,dob,status,gender,house_number,house_name,house_area,house_city,house_state,house_country,profession,school,college,relation,data_date,phone_number,mail_id,marital_status)
+    try:
+        cur.execute(insval,vallist)
+        mydb.commit()
+        mydb.close()
+        speak('Information successfully inserted')
+        print('Inserted')
+    except Exception:
+        speak('Table creation failed please try again in few minutes')
+        print('Failed')
 
 #openapp
 def openapp(name):
@@ -286,7 +314,7 @@ def webopen(url):
 def closeapp(name):
     while True:
         with sr.Microphone() as source:
-            recognizer.pause_threshold = 2
+            recognizer.pause_threshold = 1
             recognizer.energy_threshold=4000
             audio = recognizer.listen(source)
         try:
@@ -326,7 +354,7 @@ def search(browser,query):
 def myresume():
     speak('Sir, my name is Cosmos')
     speak('my mother company is RAW that is Ryans Artificial Wing')
-    speak('Day of my release which you can call my birthday is 18th August 2023')
+    speak('Day of my 3.o version release which you can call my birthday is 18th August 2023')
     speak('If i tell you about my personality then i m loyal, Complacent, Supportive and Smart')
     speak('If you ask me about my view on world then i m optimistic')
     speak('Quirk thing about me is that i believe nothing is impossible for me')
@@ -335,6 +363,12 @@ def myresume():
     speak('I love to help, talk and code')
     speak('Thank you sir , now if you want any help then u can call cosmos')
 
+#show database using name
+#def humshowname(name):
+
+#show database using phone number
+#def humshowphone(number):
+    
 #------------------------------   MAIN ORDER UNDERTAKING   ------------------------------
 while True:
     order=sleeping()
@@ -439,7 +473,7 @@ while True:
                     speak('Let me try once more')
                     True
         whatcall(name,types)
-    elif 'open' in order:
+    elif 'open' and 'app' in order:
         speak('Sir, which app you want me to open it for you')
         while True:
             apname=commandeng()
@@ -465,6 +499,68 @@ while True:
         speak('On what topic do you want me to brief about')
         title=commandeng()
         wikipedia(title)
+    elif 'search' in order:
+        speak('Sir which browser do you want to use?')
+        print('Browser Name')
+        browsername= commandeng()
+        speak('Sir what do you want to search')
+        browsersearch= commandeng()
+        search(browsername,browsersearch)
+    elif 'url' in order:
+        speak('Sir please enter the U R L')
+        url=input('Enter URL: ')
+        webopen(url)
+        closeapp('website')
+    elif 'add database' in order:
+        speak('Creating Human Database')
+        speak('sir please fill below information')
+        speak('I D')
+        vid=int(input('ID: '))
+        speak('name')
+        vname=input('Name: ')
+        speak('surname')
+        vsurname=input('Surname: ')
+        speak('father name')
+        vfather_name=input('Father Name: ')
+        speak('mother name')
+        vmother_name=input('Mother Name: ')
+        speak('date of birth')
+        vdob=input('Date of Birth <YYYY-MM-DD>: ')
+        speak('alive or died')
+        vstatus=input('alive/died: ')
+        speak('gender')
+        vgender=input('Gender: ')
+        speak('House number')
+        vhouse_number=int(input('House Number: '))
+        speak('house name')
+        vhouse_name=input('House Name: ')
+        speak('house area')
+        vhouse_area=input('House area: ')
+        speak('city')
+        vhouse_city=input('City: ')
+        speak('state')
+        vhouse_state=input('State: ')
+        speak('country')
+        vhouse_country=input('Country: ')
+        speak('profession')
+        vprofession=input('Profession: ')
+        speak('school name')
+        vschool=input('School: ')
+        speak('college name')
+        vcollege=input('College: ')
+        speak('phone number')
+        vphone_number=input('Phone Number: ')
+        speak('mail i d')
+        vmail_id=input('Mail ID: ')
+        speak('married or single')
+        vmarital_status=input('Married/Single: ')
+        speak('information entered by Ryan sir only')
+        vdata_date=input('Database saved date <YYYY-MM-DD>: ')
+        vrelation=input('Relation: ')
+        humdata(vid,vname,vsurname,vfather_name,vmother_name,vdob,vstatus,vgender,vhouse_number,vhouse_name,vhouse_area,vhouse_city,vhouse_state,vhouse_country,vprofession,vschool,vcollege,vrelation,vdata_date,vphone_number,vmail_id,vmarital_status)
+ #   elif 'show database' in order:
+    elif 'shutdown' in order:
+        break
     else:
         speak('Sorry sir, right now i do not have any response to this task')
         speak('But if you want, you can make me search something related to it on internet')
